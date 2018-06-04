@@ -10,7 +10,9 @@ import UIKit
 
 class TableViewController: UITableViewController {
 
-    var dataArray:[String] = ["Позвонить маме", "Купить хлеба", "Что то сделать"]
+    var dataArray:[String] = [] // "Позвонить маме", "Купить хлеба", "Что то сделать"
+    var isDone: [Bool] = []
+    
     
     @IBAction func PushAddButton(_ sender: UIBarButtonItem) {
         let allertController = UIAlertController(title: "Новая запись", message: "", preferredStyle: UIAlertControllerStyle.alert)
@@ -21,6 +23,7 @@ class TableViewController: UITableViewController {
         let allertAdd = UIAlertAction(title: "Добавить", style: UIAlertActionStyle.default) { (alert) in
             if allertController.textFields?[0].text != "" {
                 self.dataArray.append(allertController.textFields![0].text!)
+                self.isDone.append(false) // Дело не выполнено
                 self.tableView.reloadData()
             }
         }
@@ -60,10 +63,25 @@ class TableViewController: UITableViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier", for: indexPath)
 
         cell.textLabel?.text = dataArray[indexPath.row]
+        if isDone[indexPath.row] {
+            cell.accessoryType = .checkmark
+        } else {
+            cell.accessoryType = .none
+        }
         
         return cell
     }
     
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        if isDone[indexPath.row] {
+            isDone[indexPath.row] = false
+            tableView.cellForRow(at: indexPath)?.accessoryType = .none
+        } else {
+            isDone[indexPath.row] = true
+            tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
+        }
+    }
 
     /*
     // Override to support conditional editing of the table view.
