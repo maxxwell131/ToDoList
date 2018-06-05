@@ -10,9 +10,8 @@ import UIKit
 
 class TableViewController: UITableViewController {
 
-    var dataArray:[String] = [] // "Позвонить маме", "Купить хлеба", "Что то сделать"
-    var isDone: [Bool] = []
-    
+    var dataArray:[[String: Any]] = [["name":"Позвонить маме", "isDone": true, "color": "red"]] // "Позвонить маме", "Купить хлеба", "Что то сделать"
+   
     
     @IBAction func PushAddButton(_ sender: UIBarButtonItem) {
         let allertController = UIAlertController(title: "Новая запись", message: "", preferredStyle: UIAlertControllerStyle.alert)
@@ -22,8 +21,9 @@ class TableViewController: UITableViewController {
         
         let allertAdd = UIAlertAction(title: "Добавить", style: UIAlertActionStyle.default) { (alert) in
             if allertController.textFields?[0].text != "" {
-                self.dataArray.append(allertController.textFields![0].text!)
-                self.isDone.append(false) // Дело не выполнено
+                let newDictonary = ["name":allertController.textFields![0].text!, "isDone": false, "color": "white"] as [String : Any]
+                
+                self.dataArray.append(newDictonary)
                 self.tableView.reloadData()
             }
         }
@@ -62,8 +62,11 @@ class TableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier", for: indexPath)
 
-        cell.textLabel?.text = dataArray[indexPath.row]
-        if isDone[indexPath.row] {
+        let itemDictonary = dataArray[indexPath.row]
+        cell.textLabel?.text = itemDictonary["name"] as! String?
+        let isDone = itemDictonary["isDone"] as! Bool
+        
+        if isDone {
             cell.accessoryType = .checkmark
         } else {
             cell.accessoryType = .none
@@ -74,12 +77,16 @@ class TableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        if isDone[indexPath.row] {
-            isDone[indexPath.row] = false
+        let itemDictonary = dataArray[indexPath.row]
+        let isDone = itemDictonary["isDone"] as! Bool
+        
+        if isDone {
             tableView.cellForRow(at: indexPath)?.accessoryType = .none
+            dataArray[indexPath.row]["isDone"] = false
         } else {
-            isDone[indexPath.row] = true
             tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
+            dataArray[indexPath.row]["isDone"] = true
+
         }
     }
 
@@ -98,7 +105,6 @@ class TableViewController: UITableViewController {
             // Delete the row from the data source
             
             dataArray.remove(at: indexPath.row)
-            isDone.remove(at: indexPath.row)
             
             tableView.deleteRows(at: [indexPath], with: .fade) //удаляем из таблицы столбец
         }
