@@ -10,7 +10,20 @@ import UIKit
 
 class TableViewController: UITableViewController {
 
-    var dataArray:[[String: Any]] = [["name":"Позвонить маме", "isDone": true, "color": "red"]] // "Позвонить маме", "Купить хлеба", "Что то сделать"
+    var dataArray:[[String: Any]] {
+        set {
+            UserDefaults.standard.set(newValue, forKey: "dataArrayKey")
+            UserDefaults.standard.synchronize()
+        }
+        get {
+            if let array = UserDefaults.standard.array(forKey: "dataArrayKey") as? [[String: Any]] {
+                return array
+            } else {
+                return []
+            }
+        }
+    }
+    // "Позвонить маме", "Купить хлеба", "Что то сделать"
    
     
     @IBAction func PushAddButton(_ sender: UIBarButtonItem) {
