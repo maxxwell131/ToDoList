@@ -54,7 +54,7 @@ class TableViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        tableView.allowsSelectionDuringEditing = true
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
 
@@ -93,17 +93,37 @@ class TableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        let itemDictonary = dataArray[indexPath.row]
-        let isDone = itemDictonary["isDone"] as! Bool
         
-        if isDone {
-            tableView.cellForRow(at: indexPath)?.accessoryType = .none
-            dataArray[indexPath.row]["isDone"] = false
+        if !tableView.isEditing {
+            let itemDictonary = dataArray[indexPath.row]
+            let isDone = itemDictonary["isDone"] as! Bool
+            
+            if isDone {
+                tableView.cellForRow(at: indexPath)?.accessoryType = .none
+                dataArray[indexPath.row]["isDone"] = false
+            } else {
+                tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
+                dataArray[indexPath.row]["isDone"] = true
+            }
         } else {
-            tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
-            dataArray[indexPath.row]["isDone"] = true
-
+            let alertController = UIAlertController(title: "Изменить название", message: "", preferredStyle: UIAlertControllerStyle.alert)
+            alertController.addTextField (configurationHandler: { (textField) in
+                textField.placeholder = "Название дела"
+                textField.text = self.dataArray[indexPath.row]["name"] as? String
+            })
+            
+            let alertActionEdit = UIAlertAction(title: "Изменить", style: UIAlertActionStyle.default) { (alert) in
+                self.dataArray[indexPath.row]["name"] = alertController.textFields![0].text
+                self.tableView.reloadData()
+            }
+            
+            let alertActionCancel = UIAlertAction(title: "Отмена", style: UIAlertActionStyle.default, handler: nil)
+            
+            alertController.addAction(alertActionEdit)
+            alertController.addAction(alertActionCancel)
+            present(alertController, animated: true, completion: nil)
         }
+
     }
 
     /*
