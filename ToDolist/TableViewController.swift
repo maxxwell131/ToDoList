@@ -25,6 +25,9 @@ class TableViewController: UITableViewController {
     }
     // "Позвонить маме", "Купить хлеба", "Что то сделать"
    
+    @IBAction func PushEditAction(_ sender: UIBarButtonItem) {
+        tableView.setEditing(!tableView.isEditing, animated: true)
+    }
     
     @IBAction func PushAddButton(_ sender: UIBarButtonItem) {
         let allertController = UIAlertController(title: "Новая запись", message: "", preferredStyle: UIAlertControllerStyle.alert)
@@ -124,20 +127,21 @@ class TableViewController: UITableViewController {
     }
 
 
-    /*
+
     // Override to support rearranging the table view.
     override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to: IndexPath) {
-
+        let fromItem = dataArray[fromIndexPath.row]
+        dataArray.remove(at: fromIndexPath.row)
+        dataArray.insert(fromItem, at: to.row)
     }
-    */
 
-    /*
+    
     // Override to support conditional rearranging of the table view.
     override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
         // Return false if you do not want the item to be re-orderable.
         return true
     }
-    */
+
 
     /*
     // MARK: - Navigation

@@ -42,6 +42,11 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="Список дел" id="epp-a9-MHA">
+                        <barButtonItem key="leftBarButtonItem" systemItem="edit" id="orx-qx-Vrl">
+                            <connections>
+                                <action selector="PushEditAction:" destination="2T6-tl-FSz" id="PXv-nH-xRV"/>
+                            </connections>
+                        </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="1Gw-e1-uDw">
                             <connections>
                                 <action selector="PushAddButton:" destination="2T6-tl-FSz" id="I55-yJ-eLb"/>
