@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import UserNotifications
 
 class TableViewController: UITableViewController {
 
@@ -14,6 +15,15 @@ class TableViewController: UITableViewController {
         set {
             UserDefaults.standard.set(newValue, forKey: "dataArrayKey")
             UserDefaults.standard.synchronize()
+            
+            var badgestNumber: Int = 0
+            for item in newValue {
+                if item["isDone"] as! Bool == false {
+                    badgestNumber += 1
+                }
+                UIApplication.shared.applicationIconBadgeNumber = badgestNumber
+            }
+            
         }
         get {
             if let array = UserDefaults.standard.array(forKey: "dataArrayKey") as? [[String: Any]] {
@@ -25,6 +35,45 @@ class TableViewController: UITableViewController {
     }
     // "Позвонить маме", "Купить хлеба", "Что то сделать"
    
+    @IBAction func LongPressAction(_ sender: AnyObject) {
+        let longPress = sender as! UILongPressGestureRecognizer
+        if longPress.state == .began {
+            let pointPress = longPress.location(in: tableView)
+            
+            if let indexPath = tableView.indexPathForRow(at: pointPress) {
+                let cell = tableView.cellForRow(at: indexPath)
+                
+                let alertController = UIAlertController(title: "Выбирите цвет", message: "", preferredStyle: UIAlertControllerStyle.actionSheet)
+                
+                let aRed = UIAlertAction(title: "Красный", style: UIAlertActionStyle.default) { (alert) in
+                    cell?.backgroundColor = UIColor.red
+                    self.dataArray[indexPath.row]["color"] = "red"
+                }
+                let aGreen = UIAlertAction(title: "Зеленый", style: UIAlertActionStyle.default) { (alert) in
+                    cell?.backgroundColor = UIColor.green
+                    self.dataArray[indexPath.row]["color"] = "green"
+                }
+                let aYellow = UIAlertAction(title: "Желтый", style: UIAlertActionStyle.default) { (alert) in
+                    cell?.backgroundColor = UIColor.yellow
+                    self.dataArray[indexPath.row]["color"] = "yellow"
+                }
+                let aWhite = UIAlertAction(title: "Белый", style: UIAlertActionStyle.default) { (alert) in
+                    cell?.backgroundColor = UIColor.white
+                    self.dataArray[indexPath.row]["color"] = "white"
+                }
+                let aCancel = UIAlertAction(title: "Отмена", style: UIAlertActionStyle.cancel) { (alert) in
+                }
+                alertController.addAction(aRed)
+                alertController.addAction(aGreen)
+                alertController.addAction(aYellow)
+                alertController.addAction(aWhite)
+                alertController.addAction(aCancel)
+                present(alertController, animated: true, completion: nil)
+            }
+        }
+        
+    }
+    
     @IBAction func PushEditAction(_ sender: UIBarButtonItem) {
         tableView.setEditing(!tableView.isEditing, animated: true)
     }
@@ -88,10 +137,26 @@ class TableViewController: UITableViewController {
             cell.accessoryType = .none
         }
         
+        let color = dataArray[indexPath.row]["color"] as? String
+        if color == "red" {
+            cell.backgroundColor = UIColor.red
+        } else if color == "green" {
+            cell.backgroundColor = UIColor.green
+        } else if color == "yellow" {
+            cell.backgroundColor = UIColor.yellow
+        } else {
+            cell.backgroundColor = UIColor.white
+        }
+        
+        
         return cell
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        UNUserNotificationCenter.current().requestAuthorization(options: [.badge]) { (bool, error) in
+        }
+        
         tableView.deselectRow(at: indexPath, animated: true)
         
         if !tableView.isEditing {
@@ -107,14 +172,15 @@ class TableViewController: UITableViewController {
             }
         } else {
             let alertController = UIAlertController(title: "Изменить название", message: "", preferredStyle: UIAlertControllerStyle.alert)
+            
             alertController.addTextField (configurationHandler: { (textField) in
                 textField.placeholder = "Название дела"
-                textField.text = self.dataArray[indexPath.row]["name"] as? String
+                textField.text = self.dataArray[indexPath.row]["name"] as! String?
             })
             
             let alertActionEdit = UIAlertAction(title: "Изменить", style: UIAlertActionStyle.default) { (alert) in
-                self.dataArray[indexPath.row]["name"] = alertController.textFields![0].text
-                self.tableView.reloadData()
+                self.dataArray[indexPath.row]["name"] = alertController.textFields?[0].text
+                tableView.reloadData()
             }
             
             let alertActionCancel = UIAlertAction(title: "Отмена", style: UIAlertActionStyle.default, handler: nil)

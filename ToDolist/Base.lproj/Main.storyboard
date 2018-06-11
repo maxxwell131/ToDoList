@@ -39,6 +39,7 @@
                         <connections>
                             <outlet property="dataSource" destination="2T6-tl-FSz" id="xKx-5n-F07"/>
                             <outlet property="delegate" destination="2T6-tl-FSz" id="8ez-2H-8Z1"/>
+                            <outletCollection property="gestureRecognizers" destination="DhE-Wt-MU4" appends="YES" id="Y5W-ja-LzF"/>
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="Список дел" id="epp-a9-MHA">
@@ -55,6 +56,11 @@
                     </navigationItem>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Wog-Lg-2rC" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <pongPressGestureRecognizer allowableMovement="10" minimumPressDuration="0.69999999999999996" id="DhE-Wt-MU4">
+                    <connections>
+                        <action selector="LongPressAction:" destination="2T6-tl-FSz" id="RG4-1Y-Fb3"/>
+                    </connections>
+                </pongPressGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="713" y="102"/>
         </scene>
